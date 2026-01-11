@@ -1,0 +1,72 @@
+/* Advanced animations */
+@keyframes particle-explosion {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+@keyframes glitch-shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+@keyframes neon-pulse {
+    0%, 100% { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color); }
+    50% { text-shadow: 0 0 20px var(--primary-color), 0 0 40px var(--primary-color), 0 0 60px var(--primary-color); }
+}
+
+@keyframes data-stream {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+/* Enhanced button animations */
+.cta-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.cta-button:hover::before {
+    left: 100%;
+}
+
+/* Game card animations */
+.game-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.game-card:hover::before {
+    opacity: 1;
+    transform: rotate(45deg) translate(50%, 50%);
+}
