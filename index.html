@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daven's World</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/physics.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <!-- Security Layer -->
+    <div id="security-overlay" class="security-layer">
+        <div class="encryption-status">
+            <span id="hash-count">0</span> encryption hashes active
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>DAVEN'S WORLD</h1>
+                <div class="logo-particles"></div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#games" class="nav-link">Games</a></li>
+                <li><a href="#create" class="nav-link">Create</a></li>
+                <li><a href="#social" class="nav-link">Social</a></li>
+                <li><a href="#profile" class="nav-link">Profile</a></li>
+            </ul>
+            <div class="user-stats">
+                <div class="creds-display">
+                    <span class="creds-icon">💎</span>
+                    <span id="user-creds">0</span> Creds
+                </div>
+                <div class="user-avatar" id="user-avatar">
+                    <img src="assets/avatar/default.png" alt="User Avatar">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Physics -->
+    <section id="home" class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="glitch-text" data-text="DAVEN'S">DAVEN'S</span>
+                <span class="glitch-text" data-text="WORLD">WORLD</span>
+            </h1>
+            <p class="hero-subtitle">Play. Create. Connect. Earn Creds.</p>
+            <div class="hero-buttons">
+                <button class="cta-button primary" onclick="enterWorld()">
+                    <span>Enter World</span>
+                    <div class="button-particles"></div>
+                </button>
+                <button class="cta-button secondary" onclick="showGameCreator()">
+                    <span>Create Game</span>
+                    <div class="button-particles"></div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Physics Canvas -->
+        <div id="physics-container" class="physics-background">
+            <canvas id="physics-canvas"></canvas>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section id="search" class="search-section">
+        <div class="container">
+            <div class="search-container">
+                <input type="text" id="game-search" placeholder="Search games by name, creator, or tags..." class="search-input">
+                <button class="search-button" onclick="searchGames()">
+                    <span>🔍</span> Search
+                </button>
+                <div class="search-filters">
+                    <select id="category-filter" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="action">Action</option>
+                        <option value="adventure">Adventure</option>
+                        <option value="puzzle">Puzzle</option>
+                        <option value="racing">Racing</option>
+                        <option value="strategy">Strategy</option>
+                        <option value="platformer">Platformer</option>
+                        <option value="shooter">Shooter</option>
+                        <option value="rpg">RPG</option>
+                    </select>
+                    <select id="sort-filter" class="filter-select">
+                        <option value="newest">Newest</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="creds">Most Creds</option>
+                    </select>
+                </div>
+            </div>
+            <div id="search-results" class="search-results"></div>
+        </div>
+    </section>
+
+    <!-- Games Section -->
+    <section id="games" class="games-section">
+        <div class="container">
+            <h2 class="section-title">Fan-Made Games</h2>
+            <div class="games-grid" id="games-grid">
+                <!-- Games will be loaded dynamically -->
+            </div>
+            <div class="load-more">
+                <button class="load-more-btn" onclick="loadMoreGames()">Load More Games</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Creation Section -->
+    <section id="create" class="create-section">
+        <div class="container">
+            <h2 class="section-title">Create Your Game</h2>
+            <div class="creator-workspace">
+                <div class="creator-tools">
+                    <div class="tool-panel">
+                        <h3>Game Builder</h3>
+                        <div class="tool-category">
+                            <h4>Basic Objects</h4>
+                            <div class="tool-items">
+                                <div class="tool-item" draggable="true" data-type="player">
+                                    <img src="assets/icons/player.png" alt="Player">
+                                    <span>Player</span>
+                                </div>
+                                <div class="tool-item" draggable="true" data-type="enemy">
+                                    <img src="assets/icons/enemy.png" alt="Enemy">
+                                    <span>Enemy</span>
+                                </div>
+                                <div class="tool-item" draggable="true" data-type="platform">
+                                    <img src="assets/icons/platform.png" alt="Platform">
+                                    <span>Platform</span>
+                                </div>
+                                <div class="tool-item" draggable="true" data-type="coin">
+                                    <img src="assets/icons/coin.png" alt="Coin">
+                                    <span>Coin</span>
+                                </div>
+                                <div class="tool-item" draggable="true" data-type="powerup">
+                                    <img src="assets/icons/powerup.png" alt="Power-up">
+                                    <span>Power-up</span>
+                                </div>
+                                <div class="tool-item" draggable="true" data-type="spike">
+                                    <img src="assets/icons/spike.png" alt="Spike">
+                                    <span>Spike</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tool-category">
+                            <h4>Game Settings</h4>
+                            <div class="setting-group">
+                                <label>Game Title:</label>
+                                <input type="text" id="game-title" placeholder="Enter game title">
+                            </div>
+                            <div class="setting-group">
+                                <label>Description:</label>
+                                <textarea id="game-description" placeholder="Describe your game"></textarea>
+                            </div>
+                            <div class="setting-group">
+                                <label>Category:</label>
+                                <select id="game-category">
+                                    <option value="action">Action</option>
+                                    <option value="adventure">Adventure</option>
+                                    <option value="puzzle">Puzzle</option>
+                                    <option value="racing">Racing</option>
+                                    <option value="strategy">Strategy</option>
+                                    <option value="platformer">Platformer</option>
+                                    <option value="shooter">Shooter</option>
+                                    <option value="rpg">RPG</option>
+                                </select>
+                            </div>
+                            <div class="setting-group">
+                                <label>Creds Reward:</label>
+                                <input type="number" id="game-creds" value="10" min="1" max="100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="creator-canvas">
+                    <div id="game-canvas" class="game-canvas-area">
+                        <canvas id="creator-canvas"></canvas>
+                    </div>
+                    <div class="creator-controls">
+                        <button class="control-btn" onclick="testGame()">Test Game</button>
+                        <button class="control-btn" onclick="saveGame()">Save Game</button>
+                        <button class="control-btn" onclick="publishGame()">Publish Game</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Section -->
+    <section id="social" class="social-section">
+        <div class="container">
+            <h2 class="section-title">Friends & Community</h2>
+            <div class="social-panel">
+                <div class="friends-list">
+                    <h3>Friends Online</h3>
+                    <div id="friends-list" class="friends-grid">
+                        <!-- Friends loaded dynamically -->
+                    </div>
+                </div>
+                <div class="activity-feed">
+                    <h3>Recent Activity</h3>
+                    <div id="activity-feed" class="activity-list">
+                        <!-- Activity loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile" class="profile-section">
+        <div class="container">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img id="profile-avatar-img" src="assets/avatar/default.png" alt="Profile">
+                    <div class="avatar-edit" onclick="changeAvatar()">✏️</div>
+                </div>
+                <div class="profile-info">
+                    <h2 id="profile-username">Player_001</h2>
+                    <p id="profile-bio">Welcome to my gaming world!</p>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-value" id="games-played">0</span>
+                            <span class="stat-label">Games Played</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="creds-earned">0</span>
+                            <span class="stat-label">Creds Earned</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="friends-count">0</span>
+                            <span class="stat-label">Friends</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="games-created">0</span>
+                            <span class="stat-label">Games Created</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Player Modal -->
+    <div id="game-modal" class="game-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeGameModal()">&times;</span>
+            <div id="game-player"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/physics-engine.js"></script>
+    <script src="js/encryption.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/user-system.js"></script>
+    <script src="js/game-system.js"></script>
+    <script src="js/creator-tools.js"></script>
+    <script src="js/search-system.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
